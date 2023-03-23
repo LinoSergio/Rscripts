@@ -1,1 +1,1 @@
-# In this tutorial i show how to conduct a meta-analysis in R using available database
+# This repositories contains all my scripts in R. They helped me in my studies. Hope it can help you too.
