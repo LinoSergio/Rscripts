@@ -1,0 +1,109 @@
+---
+title: "Metanálise em R - tutorial básico"
+author: "Lino Sergio Rocha Conceição, PhD"
+output:
+  html_document:
+    theme: dark
+    toc: yes
+    toc_float: yes
+---
+
+# Meta-análise do efeito da vacinação para BCG
+
+Nesse banco de dados vamos examinar o resultado de 13 estudos analisando a efetividade da vacina Bacillus Calmette-Guerin (BCG) contra tuberculose.
+
+### 1. Instalando os pacotes necessários
+
+Análises em **R** requerem a utilização de pacotes com as ferramentas necessárias para a análise de dados. Nesse momento utlizaremos os pacote **metafor**.
+
+```{r}
+library("metafor")
+```
+
+### 2. Adicionando o banco de dados
+
+Primeiro precisamos visualizar nosso banco de dados. O banco de dados pode ser visualizado em **dat.bcg**. Para facilitar tanto a visualização como a análise ao longo das linha de código, nos vamos renomear o banco de dados.
+
+```{r}
+print(dat.bcg)
+```
+De agora em diante o banco de dados *dat.bcg* recebe o nome *dados*. Para isso,
+basta apenas designar o banco de dados ao nome de sua preferência.
+
+Nesse caso teremos: dados <- dat.bcg
+
+### 3. Utilizando a função escalc
+
+Essa função tem por objetivo calcular o tamanho do efeito de variáveis. Esse passo é de fundamental importância para a metanálise. Essa função esta integrada ao pacote ***metafor***, dessa forma, nenhuma instalação adicional é necessária.
+
+```{r}
+dados <- dados <- escalc(measure = "RR", ai = tpos, bi = tneg, 
+                       ci = cpos, di = cneg,
+       slab = paste(author, ", ", year, sep = ""), data = dat.bcg)
+```
+
+OBS: Para uma descrição detalhada da função ***escalc*** recomendamos a função help(escalc).
+
+### 4. Metanálise com análise de efeito randômico
+
+Usaremos uma análise de efeito randômico (analise de variância e logarítmica de risco). Também iremos renomear essa análise como fizemos na etapa anterior com a função ***escalc***.
+
+```{r}
+resultado <- rma(yi, vi, data = dados)
+```
+
+### 5. Criando o forest plot
+
+Nessa etapa, conluiremos com forest plot de nossa análise. Se todas as linhas de código anteriores estiverem corretas, a criação do forest plot obedecerá uma linha de código simples. É importante que o leitor tenha em mente que essa é apenas uma análise rápida e "crua". Existem etapas adicionais que certamente darão um rigor maior a análise dos dados.
+
+```{r}
+forest(resultado)
+```
+
+Podemos também adicionar outros comandos para deixar o forest plot mais apresentável. Para inserir os título é necessário utulizar o argumento *header*. Esse argumento pode ser um operador lógico (TRUE or FALSE), ou pode ser uma **string** da sua escolha. No exemplo abaixo irei inserir *"Author(s) and Year"*.
+
+```{r}
+forest(resultado, header = "Author(s) and Year")
+```
+
+### 5.1 Modificando a cor do diamante
+
+É possivel fazer modificações mais específicas no forest plot. Aqui modificaremos a cor do diamente. Essa abordagem não é muito comum, mas pode auxiliar num destaque do tamanho de efeito final.
+
+```{r}
+forest(resultado, header = "Author(s) and Year", col = "red")
+```
+
+### 5.2. Adicionando a predição
+
+É possivel adicionar predições por mei da função *predict.rma*. ela calcula valores previstos, erros padrão correspondentes, intervalos de confiança e intervalos de previsão da função **rma** (que foi renomeada como *resultado*)
+
+```{r}
+predict(resultado, transf = exp)
+```
+
+Agora vamos adicionar a predição dos valores obtidos no nosso forest plot usando o argumento *addpred*
+
+```{r}
+forest(resultado, header = "Author(s) and Year", col = "red", addpred = TRUE)
+```
+
+### 5.3. Forest Plot com anotações adicionais
+
+Existe uma grande variadedade de possibilidades para modificões nos forest plot.
+Aqui mostraremos algumas que podem ser muito úteis e trazer mais detalhes na análise.
+
+```{r}
+forest(resultado, atransf = exp, at = log(c(.05, .25, 1, 4)), xlim = c(-16, 6),
+       ilab = cbind(dados$tpos, dados$tneg, dados$cpos, dados$cneg), ilab.xpos = c(-9.5, -8, -6, -4.5),
+       cex = .75, header = "Author(s) and Year", col = "red",
+       addpred = TRUE)
+op <- par(cex = .75, font = 2)
+text(c(-9.5, -8, -6, -4.5), resultado$k + 2, c("TB+", "TB-", "TB+", "TB-"))
+text(c(-8.75, -5.25),     resultado$k + 3, c("Vaccinated", "Control"))
+```
+
+
+### 6. Considerações finais
+
+A idéia básica desse tutorial foi apresentar de maneira rápida uma metanálise realizada com o software R. Muitas outras análises e adequações podem ser feitas. Para uma análise mais aprofundada nesse tópico recomendamos esse [material adicional](https://www.youtube.com/watch?v=IkduL5iRdqo&t=1362s).
