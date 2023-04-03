@@ -1,0 +1,76 @@
+---
+title: "Esquisse tutorial"
+format: html
+editor: visual
+---
+
+# Introduction
+
+### What is Esquisse?
+
+**Esquisse** package helps to explore and visualize your data interactively. It is a **Shiny**. This package allows you to drag and drop the variables from your dataframe and create ***ggplot*** charts. Moreover, you can export the code to your environment and further change or add extra annotations. After putting everything together, you can export to 'PNG' or 'ppt'(Power Point).
+
+## Installation
+
+First you have to install the package. This can be done by the following command: ***install.packages("esquisse")***
+
+After installation it time to load the required packages to Esquisse work.
+
+```{r}
+#| warning: false
+
+library(esquisse)
+library(ggthemes)
+library(hrbrthemes)
+library(tidyverse)
+library(palmerpenguins)
+
+
+```
+
+After loading these packages we ready to work with some data. Lets take for instance the penguins data frame.
+
+```{r}
+#| echo: false
+#| warning: false
+
+data <- penguins
+
+head(data)
+```
+
+## Executing the esquisse
+
+The esquisse functions is our next step.
+
+```{r}
+# esquisse::esquisser()
+```
+
+You be directed to a webpage as shown in the figure.
+
+![](images/Captura%20de%20Tela%202023-04-03%20a%CC%80s%2017.57.54.png)
+
+## Making your first plot
+
+We can import the data frame from several sources. But since we already our data in the environment we can pick the default option.
+
+Load de data and you a ready to make your own plots just dragging and dropping the variables. I'll plot some examples below:
+
+![](images/Captura%20de%20Tela%202023-04-03%20a%CC%80s%2018.30.05.png)
+
+After selecting the variables you want to analyze and plot you can change the labels and titles, plot options, appearance, data (scale) and import the code to your script.
+
+## Importing the code
+
+```{r}
+#| warning: false
+ggplot(data) +
+  aes(x = bill_depth_mm, y = bill_length_mm, colour = species) +
+  geom_point(shape = "circle", size = 1.5) +
+  scale_color_hue(direction = 1) +
+  labs(x = "Bill depth (mm)", y = "Bill length (mm)") +
+  theme_minimal()
+```
+
+This is a fast tutorial on how to use the esquisse package. This can improve our abilities in data analysis and presenting data.
